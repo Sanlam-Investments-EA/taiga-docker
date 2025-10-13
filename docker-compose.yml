@@ -1,12 +1,10 @@
-version: "3.5"
-
 x-environment:
   &default-back-environment
   # These environment variables will be used by taiga-back and taiga-async.
   # Database settings
   POSTGRES_DB: "taiga"
-  POSTGRES_USER: "${POSTGRES_USER}"
-  POSTGRES_PASSWORD: "${POSTGRES_PASSWORD}"
+  POSTGRES_USER: "${PG_USER}"
+  POSTGRES_PASSWORD: "${PG_PASSWORD}"
   POSTGRES_HOST: "taiga-db"
   # Taiga settings
   TAIGA_SECRET_KEY: "${SECRET_KEY}"
@@ -37,23 +35,38 @@ x-volumes:
   # - ./config.py:/taiga-back/settings/config.py
 
 services:
-  taiga-db:
-    image: postgres:12.3
-    environment:
-      POSTGRES_DB: "taiga"
-      POSTGRES_USER: "${POSTGRES_USER}"
-      POSTGRES_PASSWORD: "${POSTGRES_PASSWORD}"
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER}"]
-      interval: 2s
-      timeout: 15s
-      retries: 5
-      start_period: 3s
+  postgres:
+    image: ghcr.io/sanlam-investments-ea/postgres-wal-g:latest
+    build: ./image-build
+    shm_size: 6gb
     volumes:
       - taiga-db-data:/var/lib/postgresql/data
+      - ./backups:/backups
+      - ./logs/cronlogs:/var/lib/cronlogs
+      - ./backup:/backup
+      - ./ssl:/ssl
+    ports:
+      - 5434:5434
+    env_file:
+      - .env
+    healthcheck:
+      test: ["CMD", "pg_isready", "-U", "${PG_USER}", "-d", "${POSTGRES_DB}"]
+      interval: 10s
+      retries: 5
+      timeout: 5s
+      start_period: 30s
+    restart: unless-stopped
+    stop_signal: SIGTERM
+    stop_grace_period: 10m
     networks:
       - taiga
-
+    container_name: taiga_postgres
+    logging:
+      driver: "json-file"
+      options:
+        max-file: "5"
+        max-size: "100m"
+        
   taiga-back:
     image: taigaio/taiga-back:latest
     environment: *default-back-environment
