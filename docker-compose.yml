@@ -154,12 +154,12 @@ services:
       - taiga
 
   taiga-gateway:
-    image: nginx:1.19-alpine
-    command: nginx -c /taiga-config/taiga.conf -g 'daemon off;'
+    build:
+      context: ./taiga-gateway
+      dockerfile: Dockerfile
     ports:
       - "9000:80"
     volumes:
-      - ./taiga-gateway:/taiga-config:ro
       - taiga-static-data:/taiga/static
       - taiga-media-data:/taiga/media
     networks:
