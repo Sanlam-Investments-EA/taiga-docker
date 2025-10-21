@@ -155,11 +155,11 @@ services:
 
   taiga-gateway:
     image: nginx:1.19-alpine
-    command: nginx -c /config/taiga.conf -g 'daemon off;'
+    command: nginx -c /taiga-config/taiga.conf -g 'daemon off;'
     ports:
       - "9000:80"
     volumes:
-      - ./taiga-gateway/taiga.conf:/config/taiga.conf:ro
+      - ./taiga-gateway:/taiga-config:ro
       - taiga-static-data:/taiga/static
       - taiga-media-data:/taiga/media
     networks:
