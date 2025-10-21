@@ -5,3 +5,9 @@ static-data
 .env.development.local
 .env.test.local
 .env.production.local
+/venv
+/backups
+/backup
+/ssl
+/logs
+/logs/cronlogs

@@ -35,9 +35,8 @@ x-volumes:
   # - ./config.py:/taiga-back/settings/config.py
 
 services:
-  postgres:
+  taiga-db:
     image: ghcr.io/sanlam-investments-ea/postgres-wal-g:latest
-    build: ./image-build
     shm_size: 6gb
     volumes:
       - taiga-db-data:/var/lib/postgresql/data
@@ -60,7 +59,7 @@ services:
     stop_grace_period: 10m
     networks:
       - taiga
-    container_name: taiga_postgres
+    container_name: taiga-db
     logging:
       driver: "json-file"
       options:
