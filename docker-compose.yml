@@ -6,6 +6,7 @@ x-environment:
   POSTGRES_USER: "${PG_USER}"
   POSTGRES_PASSWORD: "${PG_PASSWORD}"
   POSTGRES_HOST: "taiga-db"
+  POSTGRES_PORT: "5434"
   # Taiga settings
   TAIGA_SECRET_KEY: "${SECRET_KEY}"
   TAIGA_SITES_SCHEME: "${TAIGA_SCHEME}"
@@ -38,6 +39,8 @@ services:
   taiga-db:
     image: ghcr.io/sanlam-investments-ea/postgres-wal-g:latest
     shm_size: 6gb
+    environment:
+      PGPORT: 5434
     volumes:
       - taiga-db-data:/var/lib/postgresql/data
       - ./backups:/backups
@@ -49,7 +52,7 @@ services:
     env_file:
       - .env
     healthcheck:
-      test: ["CMD", "pg_isready", "-U", "${PG_USER}", "-d", "${POSTGRES_DB}"]
+      test: ["CMD", "pg_isready", "-U", "${PG_USER}", "-d", "${POSTGRES_DB}", "-p", "5434"]
       interval: 10s
       retries: 5
       timeout: 5s
