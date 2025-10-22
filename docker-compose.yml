@@ -26,6 +26,9 @@ x-environment:
   RABBITMQ_PASS: "${RABBITMQ_PASS}"
   # Telemetry settings
   ENABLE_TELEMETRY: "${ENABLE_TELEMETRY}"
+  # Session cookies for Django Admin (required for HTTP)
+  SESSION_COOKIE_SECURE: "False"
+  CSRF_COOKIE_SECURE: "False"
   # ...your customizations go here
 
 x-volumes:
